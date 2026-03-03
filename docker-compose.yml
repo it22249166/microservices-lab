@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  item-service:
+    build: ./item-service
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "8082:8082"
+    environment:
+      - PORT=8082
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "8083:8083"
+    environment:
+      - PORT=8083
+  
+  api-gateway:
+    image: nginx:alpine
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - item-service
+      - order-service
+      - payment-service
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge
